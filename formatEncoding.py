@@ -6,8 +6,8 @@ import os
 import glob
 import codecs
 from langdetect import detect
-from src.CleanText import find_between_r
-from src.CleanText import find_between
+from src.cleantext import find_between_r
+from src.cleantext import find_between
 
 BLOCKSIZE = 1048576
 encode_type_en="UTF-8"

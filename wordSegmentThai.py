@@ -6,39 +6,15 @@ import codecs
 import os
 import sys
 import glob
-import nltk
-from src.CleanText import clean_content
-from src.language import language_not_en
-from src.language import language_not_th_en
-
-from nltk.tokenize import word_tokenize
 from langdetect import detect
-from src.language import language_mixed_en
-from src.language import language_mixed_th
-from pythainlp.tokenize import word_tokenize as word_tokenize_th
 from os.path import basename
 import deepcut
+from src.language import language_mixed_en
+from src.language import language_mixed_th
+from src.tokenize import tokenize_thai
+from src.tokenize import tokenize_eng
 
 encode_type="UTF-8"
-
-################### to move to .src #####################
-def tokenize_thai(text):
-    tokens = deepcut.tokenize(text)
-    # return ' '.join(pieces)
-    content_buff = ""
-    for word in tokens:
-        content_buff = content_buff + " " + word
-    content_buff = ' '.join(content_buff.split())
-    return( content_buff.strip() )
-def tokenize_eng(text):
-    tokens = word_tokenize(text)
-    # return ' '.join(pieces)
-    content_buff = ""
-    for word in tokens:
-        content_buff = content_buff + " " + word
-    content_buff = ' '.join(content_buff.split())
-    return( content_buff.strip() )
-#########################################################
 
 dirname = sys.argv[-1]
 dirname = dirname.strip()

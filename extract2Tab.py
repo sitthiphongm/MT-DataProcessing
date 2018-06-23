@@ -7,8 +7,8 @@ import os
 import glob
 import sys
 from langdetect import detect
-from src.CleanText import clean_content
-from src.CleanText import find_between_r
+from src.cleantext import clean_content
+from src.cleantext import find_between_r
 
 encode_type="UTF-8"
 encode_type_en="UTF-8"

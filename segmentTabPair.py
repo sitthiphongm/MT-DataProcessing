@@ -8,17 +8,18 @@ import os
 import sys
 import glob
 from os.path import basename
-from nltk.tokenize import sent_tokenize
-from nltk.tokenize import regexp_tokenize
+from nltk.tokenize import sent_tokenize as split_sentence_en
+from src.sentence import split_sentence_th
 
 encode_type="UTF-8"
+
+DEFAULT_PERCENT_ERROR=5
 
 dirname = sys.argv[-1]
 dirname = dirname.strip()
 # dirname=os.path.dirname(dirname)+"/"
 if dirname[-1] != "/":
     dirname+="/"
-# print(dirname)
 
 to_data_path = dirname + '*.tab'
 list_file=glob.glob(to_data_path)
@@ -41,9 +42,16 @@ for input_file in list_file:
             en_ss = tokens[0]
             th_ss = tokens[1].rstrip('.')
 
-            sent_en_list = sent_tokenize(en_ss)
-            sent_th_list = th_ss.split()
+            # Clean tag.
+            en_ss = re.sub(r'{\\[a-zA-Z]+}', '', en_ss)
+            th_ss = re.sub(r'{\\[a-zA-Z]+}', '', th_ss)
+            en_ss = re.sub(r'<[a-zA-Z]+>', '', en_ss)
+            th_ss = re.sub(r'<[a-zA-Z]+>', '', th_ss)
+            en_ss = re.sub(r'<\/[a-zA-Z]+>', '', en_ss)
+            th_ss = re.sub(r'<\/[a-zA-Z]+>', '', th_ss)
 
+            sent_en_list = split_sentence_en(en_ss)
+            sent_th_list = split_sentence_th(th_ss)
 
 
             #####
@@ -57,9 +65,12 @@ for input_file in list_file:
 
                 print('\n:::::: ' + str(ratio))
 
-                # join sentence
-                # del a[-1]
+                # Join in Thai.
+                # 1) Join ,;..... and space
+                # 2)
 
+                print(en_ss)
+                print(th_ss)
 
                 len_th=sent_th_list[:]
                 for i in range(len(len_th)):
@@ -71,8 +82,6 @@ for input_file in list_file:
 
                 print(sent_th_list)
                 print(len_th)
-
-
 
                 len_en=sent_en_list[:]
                 for i in range(len(len_en)):

@@ -53,9 +53,6 @@ for input_file in list_file:
                 word=word.strip()
                 if count_word < len_word:
                     # For Thai and Thai word joining
-
-                    # print(word)
-
                     if u'\u0E01' <= word[0] <= u'\u0E4F':
                         if join_word==1 or join_word==2 or join_word==3:
                             content_buff_temp=content_buff_temp+word
@@ -110,6 +107,7 @@ for input_file in list_file:
             content_buff=content_buff + content_buff_temp + "\n"
 
             line_count += 1
+            # Flush data.
             if (line_count%10000 == 0):
                 file = codecs.open(output_file, "a", "utf-8")
                 file.write(content_buff)
