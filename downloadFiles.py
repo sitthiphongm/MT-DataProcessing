@@ -1,6 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import urllib.request
-import codecs
-import unicodedata
 import re
 import os
 import urllib

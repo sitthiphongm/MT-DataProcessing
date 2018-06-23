@@ -6,20 +6,14 @@ import codecs
 import os
 import sys
 import glob
-# from langdetect import detect
-from src.CleanText import clean_content
-from src.language import language_not_en
-from src.language import language_not_th_en
 from os.path import basename
 
 encode_type="UTF-8"
 
 dirname = sys.argv[-1]
 dirname = dirname.strip()
-# dirname=os.path.dirname(dirname)+"/"
 if dirname[-1] != "/":
     dirname+="/"
-# print(dirname)
 
 to_data_path = dirname + '*.txt'
 list_file=glob.glob(to_data_path)

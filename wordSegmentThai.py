@@ -1,20 +1,27 @@
-import nltk
-from pythainlp.tokenize import word_tokenize as word_tokenize_th
-from nltk.tokenize import word_tokenize
-from langdetect import detect
-from src.language import language_mixed_en
-from src.language import language_mixed_th
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import re
 import codecs
 import os
 import sys
 import glob
+import nltk
 from src.CleanText import clean_content
 from src.language import language_not_en
 from src.language import language_not_th_en
+
+from nltk.tokenize import word_tokenize
+from langdetect import detect
+from src.language import language_mixed_en
+from src.language import language_mixed_th
+from pythainlp.tokenize import word_tokenize as word_tokenize_th
 from os.path import basename
 import deepcut
 
+encode_type="UTF-8"
+
+################### to move to .src #####################
 def tokenize_thai(text):
     tokens = deepcut.tokenize(text)
     # return ' '.join(pieces)
@@ -23,7 +30,6 @@ def tokenize_thai(text):
         content_buff = content_buff + " " + word
     content_buff = ' '.join(content_buff.split())
     return( content_buff.strip() )
-
 def tokenize_eng(text):
     tokens = word_tokenize(text)
     # return ' '.join(pieces)
@@ -32,20 +38,14 @@ def tokenize_eng(text):
         content_buff = content_buff + " " + word
     content_buff = ' '.join(content_buff.split())
     return( content_buff.strip() )
-
-
-
-
-encode_type="UTF-8"
+#########################################################
 
 dirname = sys.argv[-1]
 dirname = dirname.strip()
-# dirname=os.path.dirname(dirname)+"/"
 if dirname[-1] != "/":
     dirname+="/"
-# print(dirname)
 
-to_data_path = dirname + '*.detok'
+to_data_path = dirname + '*.txt'
 list_file=glob.glob(to_data_path)
 
 for input_file in list_file:
@@ -98,10 +98,9 @@ for input_file in list_file:
                     content_buff_temp = content_buff_temp + " " + tokens_eng
             else:
                 content_buff_temp = tokenize_thai(line)
-
             content_buff = content_buff + content_buff_temp.strip() + "\n"
-
             line_count += 1
+            # Flush data.
             if (line_count%10000 == 0):
                 file = codecs.open(output_file, "a", encode_type)
                 file.write(content_buff)

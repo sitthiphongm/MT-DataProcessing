@@ -1,7 +1,10 @@
-import codecs
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import re
 import os
 import glob
+import codecs
 from langdetect import detect
 from src.CleanText import find_between_r
 from src.CleanText import find_between

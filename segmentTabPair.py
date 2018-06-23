@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import nltk
 import re
 import codecs
@@ -19,14 +22,6 @@ if dirname[-1] != "/":
 
 to_data_path = dirname + '*.tab'
 list_file=glob.glob(to_data_path)
-
-pattern = r'''(?x)          # set flag to allow verbose regexps
-        (?:[A-Z]\.)+        # abbreviations, e.g. U.S.A.
-      | \w+(?:-\w+)*        # words with optional internal hyphens
-      | \$?\d+(?:\.\d+)?%?  # currency and percentages, e.g. $12.40, 82%
-      | \.\.\.              # ellipsis
-      | [][.,;"'?():_`-]    # these are separate tokens; includes ], [
-    '''
 
 for input_file in list_file:
     print(input_file)

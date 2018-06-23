@@ -6,25 +6,19 @@ import codecs
 import os
 import sys
 import glob
-# from langdetect import detect
-from src.CleanText import clean_content
-from src.language import language_not_en
-from src.language import language_not_th_en
 from os.path import basename
 
 encode_type="UTF-8"
 
 dirname = sys.argv[-1]
 dirname = dirname.strip()
-# dirname=os.path.dirname(dirname)+"/"
+
 if dirname[-1] != "/":
     dirname+="/"
 # print(dirname)
 
 to_data_path = dirname + '*.txt'
 list_file=glob.glob(to_data_path)
-
-
 
 for input_file in list_file:
     print(input_file)
@@ -104,7 +98,7 @@ for input_file in list_file:
             content_buff_temp=re.sub(r"[\ ]@-@[\ ]|[\ ]@-@|@-@[\ ]", "-",content_buff_temp)
             content_buff_temp = re.sub(r'\s([\'!?\.,])', r'\1', content_buff_temp)
 
-            '''
+            ''' to cintunue
             content_buff_temp=re.sub(r'\s(["\'])', r'\1', content_buff_temp)
             content_buff_temp=re.sub(r'("|\')([\ ])', r'\1', content_buff_temp)
             content_buff_temp = re.sub(r'(")(")', r'\1 \2', content_buff_temp)
