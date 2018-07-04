@@ -48,7 +48,8 @@ for input_file in list_file:
             len_word=len(tokens)
             join_word=1
             content_buff_temp="";
-            # print(line)
+
+            # TODO on this for loop. Need chages to simple REGEX as sentence split did.
             for word in tokens:
                 word=word.strip()
                 if count_word < len_word:
@@ -89,6 +90,7 @@ for input_file in list_file:
                         # print("-----" + word)
                     else:
                         join_word = 0;
+
 
             # RED dot/new line, replace with empty
             content_buff_temp=content_buff_temp.strip()
