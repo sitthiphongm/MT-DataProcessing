@@ -1,5 +1,6 @@
 from nltk.tokenize import word_tokenize
 from pythainlp.tokenize import word_tokenize as word_tokenize_th
+import deepcut
 
 def tokenize_eng(text):
     tokens = word_tokenize(text)
