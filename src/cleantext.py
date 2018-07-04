@@ -97,6 +97,7 @@ def clean_content(text, lang):
     elif lang=='th':
         space = ''
 
+    # TODO. We should not just remove \n. Need to do sentence segment.
     content = find_between_r(text, ',,', '\n')
     content = content.replace('\\N', space)
     content = content.replace('/N', space)
@@ -142,8 +143,8 @@ def clean_content(text, lang):
     if (content_s != ''):
         content = content_s
 
-    # normoalize string.
-
+    # Normoalize / Repalce bad char string.
+    # alot more bad char TODO here.
     content = content.replace('', "'");
     content = content.replace('', '"');
     content = content.replace('', '"');

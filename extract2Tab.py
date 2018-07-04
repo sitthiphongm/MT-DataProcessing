@@ -15,7 +15,7 @@ encode_type_en="UTF-8"
 encode_type_th="TIS-620"
 
 data_path = os.path.dirname(os.path.realpath(__file__))
-data_path = data_path + '/data/unicode/*.en'
+data_path = data_path + '/data/srt/*.en'
 en_files = glob.glob(data_path)
 
 # Process tabpair.
@@ -56,7 +56,6 @@ for source_file in en_files:
         target_file = file_name + '.th'
 
         # print(target_file)
-
         with codecs.open(target_file, "r", encoding=encode_type) as targetFile:
             for line in targetFile.readlines():
                 time_frame = find_between_r(line, 'Marked=', 'Default')
@@ -72,14 +71,12 @@ for source_file in en_files:
                         target_english = re.search('[a-zA-Z]', content)
                         source_thai = re.search('[ก-ฮ]', content_s)
                         target_thai = re.search('[ก-ฮ]', content)
-
                         out_text = ''
                         if (source_english and target_thai):
                             out_text = content_s + '\t' + content
                         elif (source_thai and target_english):
                             out_text = content + '\t' + content_s + ''
-
-                        # wrong pair.
+                        # Wrong pair.
                         if (out_text != ''):
                             out_text_buff += out_text + '\n'
         filename_tab = file_name + '.tab'
