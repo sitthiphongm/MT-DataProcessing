@@ -25,12 +25,13 @@ content_buff=''
 text1 = "On a $50,000 mortgage of 30 years at 8 percent, the monthly payment would be $366.88."
 text2="สวัสดีครับ   ผมเรย์ คินเซลล่า เป็นเกียรติที่ได้พบคุณ 10, ๕๔ คะแนน มากมาย, มากๆ จริง ๆ ครับ ผมผมผมผมผ"
 
-print(split_sentence_th(text2))
+# print(split_sentence_th(text2))
 
 
+test='multiple covers_SIG_NEWLINE_of{i1} Entertainment Weekly;{i}'
+content = re.sub(r'{[a-zA-Z]{1}[0-9]{0,2}}', '', test)
 
-
-
+print(content)
 
 
 

@@ -99,30 +99,23 @@ def clean_content(text, lang):
 
     # TODO. We should not just remove \n. Need to do sentence segment.
     content = find_between_r(text, ',,', '\n')
-    content = content.replace('\\N', space)
-    content = content.replace('/N', space)
+    content = content.replace('\\n', '_SIG_NEWLINE_')
+    content = content.replace('\\N', '_SIG_NEWLINE_')
+    content = content.replace('//N', '_SIG_NEWLINE_')
+    content = content.replace('/N', '_SIG_NEWLINE_')
+    content = content.replace('...', '_SIG_JOINLINE_')
 
-    # clean Text in between {} some mark.
-    repeated=0
-    content_s = remove_between(content, '{', '}')
-    while (content_s!=False):
-        content = content_s
-        content_s = remove_between(content, '{', '}')
-        if (repeated > 15):
-            return ''
-        else:
-            repeated=repeated+1
-    # clean Text in between <> html text.
-    repeated=0
-    content_s = remove_between(content, '<', '>')
-    while (content_s!=False):
-        content = content_s
-        content_s = remove_between(content, '<', '>')
-        if (repeated > 15):
-            return ''
-        else:
-            repeated=repeated+1
+    # Clean tag.
+    print(content)
+    repeat=0
+    while ((content.find('{') != -1) or (content.find('<') != -1)) and (repeat<15):
+        repeat = repeat + 1
+        content = re.sub(r'<.*?>', '', content)
+        content = re.sub(r'{.*?}', '', content)
+        content = re.sub(r'{[\\][a-zA-Z]{1}[0-9]{0,2}|[>][\/][\/][<]', '', content)
+    print("====>",content)
 
+    # Trim.
     content_s = remove_edge(content, '}', '{')
     if (content_s != ''):
         content = content_s
@@ -143,7 +136,7 @@ def clean_content(text, lang):
     if (content_s != ''):
         content = content_s
 
-    # Normoalize / Repalce bad char string.
+    # Normoalize / Repalce bad char/string.
     # alot more bad char TODO here.
     content = content.replace('', "'");
     content = content.replace('', '"');
@@ -157,11 +150,16 @@ def clean_content(text, lang):
     content = content.replace('โช', '');
     content = content.replace('âª','#');
 
-    content = content.replace(' \n ', ' ')
+    # Clean.
+    content = content.replace('♪', '');
+    content = content.replace('♥', '');
+    content = content.replace('­', '');
+    content = content.replace('♫', '');
+    content = content.replace('～', '');
+
+    # Strp head / tail.
     content = content.lstrip('-')
     content = content.lstrip('"')
-    content = content.replace('<i>', '')
-    content = content.replace('</i>', '')
     content = content.replace('\\', '')
     content = content.strip()
     content = ' '.join(content.split())
