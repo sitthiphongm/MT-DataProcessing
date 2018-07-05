@@ -104,6 +104,7 @@ def clean_content(text, lang):
     content = content.replace('//N', '_SIG_NEWLINE_')
     content = content.replace('/N', '_SIG_NEWLINE_')
     content = content.replace('...', '_SIG_JOINLINE_')
+    # content = content.replace('..', '_SIG_JOINLINE_')
 
     # Clean tag.
     print(content)
@@ -138,24 +139,24 @@ def clean_content(text, lang):
 
     # Normoalize / Repalce bad char/string.
     # alot more bad char TODO here.
-    content = content.replace('', "'");
-    content = content.replace('', '"');
-    content = content.replace('', '"');
-    content = content.replace('', "'");
+    content = content.replace('', "'")
+    content = content.replace('', '"')
+    content = content.replace('', '"')
+    content = content.replace('', "'")
 
-    content = content.replace('โ','"');
-    content = content.replace('โ', '"');
-    content = content.replace('โ', "'");
-    content = content.replace('เน','e');
-    content = content.replace('โช', '');
-    content = content.replace('âª','#');
+    content = content.replace('โ','"')
+    content = content.replace('โ', '"')
+    content = content.replace('โ', "'")
+    content = content.replace('เน','e')
+    content = content.replace('โช', '')
+    content = content.replace('âª','#')
 
     # Clean.
-    content = content.replace('♪', '');
-    content = content.replace('♥', '');
-    content = content.replace('­', '');
-    content = content.replace('♫', '');
-    content = content.replace('～', '');
+    content = content.replace('♪', '')
+    content = content.replace('♥', '')
+    content = content.replace('­', '')
+    content = content.replace('♫', '')
+    content = content.replace('～', '')
 
     # Strp head / tail.
     content = content.lstrip('-')
