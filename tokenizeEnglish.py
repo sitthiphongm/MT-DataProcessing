@@ -7,7 +7,7 @@ import sys
 import glob
 import codecs
 from os.path import basename
-from src.tokenize import tokenize_eng
+from nltk.tokenize import TweetTokenizer
 
 encode_type="UTF-8"
 
@@ -16,8 +16,19 @@ dirname = dirname.strip()
 if dirname[-1] != "/":
     dirname+="/"
 
-to_data_path = dirname + '*.txt'
+to_data_path = dirname + '*detok.EN.txt'
 list_file=glob.glob(to_data_path)
+
+# Tokenize.
+word_tokenize = TweetTokenizer()
+def tokenize_eng(text):
+    tokens = word_tokenize.tokenize(text)
+    # return ' '.join(pieces)
+    content_buff = ""
+    for word in tokens:
+        content_buff = content_buff + " " + word
+    content_buff = ' '.join(content_buff.split())
+    return( content_buff.strip() )
 
 for input_file in list_file:
     print(input_file)
@@ -29,6 +40,10 @@ for input_file in list_file:
     open(output_file, 'w').close()
     content_buff=""
     line_count = 0
+
+    # Tokenize.
+    wordTokenize = TweetTokenizer()
+
     with codecs.open(input_file, "r", encoding=encode_type) as sourceFile:
         line_count=0
         for line in sourceFile.readlines():
@@ -39,6 +54,7 @@ for input_file in list_file:
                 content_buff += line
                 content_buff += "\n"
                 continue
+
             content_buff = content_buff + tokenize_eng(line) + "\n"
             line_count += 1
             # Flush data.
@@ -48,8 +64,8 @@ for input_file in list_file:
                 file.close()
                 content_buff=""
 
-    # Write last chunk.
-    file = codecs.open(output_file, "a", encode_type)
-    file.write(content_buff)
-    file.close()
-    content_buff=""
+        # Write last chunk.
+        file = codecs.open(output_file, "a", encode_type)
+        file.write(content_buff)
+        file.close()
+        content_buff=""

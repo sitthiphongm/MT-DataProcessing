@@ -21,7 +21,7 @@ dirname = dirname.strip()
 if dirname[-1] != "/":
     dirname+="/"
 
-to_data_path = dirname + '*.txt'
+to_data_path = dirname + '*detok.TH.txt'
 list_file=glob.glob(to_data_path)
 
 for input_file in list_file:
@@ -83,11 +83,11 @@ for input_file in list_file:
                 file.close()
                 content_buff=""
 
-    # Write last chunk.
-    file = codecs.open(output_file, "a", encode_type)
-    file.write(content_buff)
-    file.close()
-    content_buff=""
+        # Write last chunk.
+        file = codecs.open(output_file, "a", encode_type)
+        file.write(content_buff)
+        file.close()
+        content_buff=""
 
 
 

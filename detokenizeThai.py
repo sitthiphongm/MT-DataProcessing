@@ -7,25 +7,29 @@ import os
 import sys
 import glob
 from os.path import basename
-
-encode_type="UTF-8"
+from src.globalSetting import *
+from src.dictionary import *
+from src.sentence import *
 
 dirname = sys.argv[-1]
 dirname = dirname.strip()
-
 if dirname[-1] != "/":
     dirname+="/"
 # print(dirname)
-
 to_data_path = dirname + '*.txt'
 list_file=glob.glob(to_data_path)
+
+# load dictionary
+dictionaryThai={}
+dictionaryThai=loadThaiDictionay()
+# sys.exit(0)
 
 for input_file in list_file:
     print(input_file)
     output_dir=os.path.dirname(input_file)+"/"
     base_name=str(basename(input_file)).split(".")
     base_name=base_name[0]
-    output_file= output_dir + base_name + ".detok"
+    output_file= output_dir + base_name + ".detok.TH.txt"
     content_buff=''
 
     # Empty file.
@@ -43,58 +47,20 @@ for input_file in list_file:
                 content_buff += line
                 content_buff += "\n"
                 continue
-            tokens = line.split(" ");
-            count_word=0
-            len_word=len(tokens)
-            join_word=1
-            content_buff_temp="";
 
-            # TODO on this for loop. Need chages to simple REGEX as sentence split did.
-            for word in tokens:
-                word=word.strip()
-                if count_word < len_word:
-                    # For Thai and Thai word joining
-                    if u'\u0E01' <= word[0] <= u'\u0E4F':
-                        if join_word==1 or join_word==2 or join_word==3:
-                            content_buff_temp=content_buff_temp+word
-                        else:
-                            content_buff_temp = content_buff_temp + " " + word
-                    # elif word[0]=="(" or word[0]=="[":
-                    #     content_buff = content_buff + " " + word
 
-                    # For Thai and NonEnglish word.
-                    elif re.match("[^a-zA-Z0-9]+", word):
-                        if join_word == 1:
-                            content_buff_temp=content_buff_temp+word
-                        elif join_word == 2:
-                            content_buff_temp = content_buff_temp + word
-                        else:
-                            content_buff_temp = content_buff_temp + " " + word
-                    else:
-                        content_buff_temp = content_buff_temp + " " + word
-                    # For Thai word
-                    if u'\u0E01' <= word[-1] <= u'\u0E4F':
-                        join_word = 1;
-                    # Parenthesis
-                    elif word[-1] == ")" or word[-1] == "]" or word[-1] == "}" or  word[-1]=="'" or  word[-1]=='"':
-                        join_word = 2;
-                    # Parenthesis
-                    elif word[-1] == "(" or word[-1] == "[" or word[-1] == "{" or  word[-1]=="'" or  word[-1]=='"':
-                        join_word = 2;
-                    # None english word and number.
-                    elif re.match("[^a-zA-Z0-9]+", word):
-                        join_word = 3;
-                        # print("-----" + word)
-                    elif re.match("[a-zA-Z]+", word):
-                        join_word = 5;
-                        # print("-----" + word)
-                    else:
-                        join_word = 0;
+            # line="I 'm up to my waist in hot snizz"
+            # line="ขึ้น รถ ไป เลยไป"
 
+            detok_sense=detok_thai(line, dictionaryThai)
+
+            # exit(0)
 
             # RED dot/new line, replace with empty
-            content_buff_temp=content_buff_temp.strip()
-            content_buff_temp=re.sub(r"[\ ]@-@[\ ]|[\ ]@-@|@-@[\ ]", "-",content_buff_temp)
+            content_buff_temp=detok_sense.strip()
+            content_buff_temp = re.sub(r'[\s]@-@[\s]', '-', content_buff_temp)
+            content_buff_temp = re.sub(r'[\s]@-@', '-', content_buff_temp)
+            content_buff_temp = re.sub(r'@-@[\s]', '-', content_buff_temp)
             content_buff_temp = re.sub(r'\s([\'!?\.,])', r'\1', content_buff_temp)
 
             ''' to cintunue
@@ -104,6 +70,13 @@ for input_file in list_file:
             content_buff_temp = re.sub(r'([a-zA-Z])([\ ])(\,|.)', r'\1\3', content_buff_temp)
             content_buff_temp=re.sub(r'\s([?.!"\'](?:\s|$))', r'\1', content_buff_temp)
             '''
+
+            # debug.
+            if (re.search(r'[a-z]', detok_sense)):
+            # if 1:
+                print("-->")
+                print(line)
+                print(content_buff_temp)
 
             # print(content_buff_temp)
             content_buff=content_buff + content_buff_temp + "\n"
@@ -117,8 +90,8 @@ for input_file in list_file:
                 content_buff=""
                 # print(line_count)
 
-    # Write last chunk.
-    file = codecs.open(output_file, "a", "utf-8")
-    file.write(content_buff)
-    file.close()
-    content_buff=""
+        # Write last chunk.
+        file = codecs.open(output_file, "a", "utf-8")
+        file.write(content_buff)
+        file.close()
+        content_buff=""

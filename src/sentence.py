@@ -1,6 +1,7 @@
 import re
 from nltk.tokenize import sent_tokenize as split_sentence_en
 
+
 def split_sentence_th(text):
     # print("-------", text)
     tokens = text.split()
@@ -22,15 +23,65 @@ def split_sentence_th(text):
                     new_sense[idx-1] = new_sense[idx-1] + " " + sentence
                 else:
                     new_sense.append(sentence)
+                    # TODO, add bug fix here and to test.
+                    idx = idx + 1
             else:
                 if (sentence != ""):
                     new_sense.append(sentence)
                     idx=idx+1
 
-
         prev_sense=sentence
 
     return new_sense
+
+def detok_thai(text, dictionary):
+    # text = ' '.join(text.split())
+    tokens = text.split()
+    if len(tokens)<2:
+        return text
+
+    # Joint sentence.
+    new_sense=[]
+    prev_sense=""
+    idx=0
+    for curr_sense in tokens:
+        # print("--",prev_sense)
+        if (re.search(r'[0-9๐-๙]', prev_sense)):
+            new_sense[idx-1] = new_sense[idx-1] + " " + curr_sense
+        elif (re.search(r'[a-zA-Z]', prev_sense)):
+            # print(curr_sense[0])
+            if (re.search(r"[']", curr_sense[0])):
+                new_sense[idx - 1] = new_sense[idx - 1] + curr_sense
+            else:
+                if (curr_sense != ""):
+                    new_sense.append(curr_sense)
+                    idx = idx + 1
+        elif (re.search(r'[,|!|ๆ]$', prev_sense)):
+            new_sense[idx-1] = new_sense[idx-1] + " " + curr_sense
+        else:
+            if (idx == 0):
+                new_sense.append(curr_sense)
+                idx = idx + 1
+                prev_sense = curr_sense
+                continue
+
+            if (re.search(r'[0-9๐-๙|ๆ|ฯ]', curr_sense)):
+                new_sense[idx-1] = new_sense[idx-1] + " " + curr_sense
+            # elif curr_sense in dictionary and prev_sense in dictionary:
+            # Re-TOK case.
+            # elif curr_sense in dictionary:
+            elif (re.search(r'[ก-ฮ|เ-ไ|/|)|(|\]|\[|\}|\{|\"]', curr_sense[0])):
+                new_sense[idx-1] = new_sense[idx-1] + curr_sense
+            else:
+                if (curr_sense != ""):
+                    new_sense.append(curr_sense)
+                    idx=idx+1
+
+        prev_sense=curr_sense
+
+    outtext =' '.join([str(x) for x in new_sense])
+
+    return outtext
 
 def get_error(source_len, target_len):
     error = (int)(100 * abs(target_len-source_len) / ( target_len + source_len ) )

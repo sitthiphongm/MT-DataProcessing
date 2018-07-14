@@ -23,7 +23,7 @@ for input_file in list_file:
     output_dir=os.path.dirname(input_file)+"/"
     base_name=str(basename(input_file)).split(".")
     base_name=base_name[0]
-    output_file= output_dir + base_name + ".detok"
+    output_file= output_dir + base_name + ".detok.EN.txt"
     content_buff=''
 
     # Empty file.
@@ -43,8 +43,13 @@ for input_file in list_file:
                 continue
              # RED dot/new line, replace with empty
             content_buff_temp=line.strip()
-            content_buff_temp=re.sub(r"[\ ]@-@[\ ]|[\ ]@-@|@-@[\ ]", "-", content_buff_temp)
+            content_buff_temp = re.sub(r'[\s]@-@[\s]', '-', content_buff_temp)
+            content_buff_temp = re.sub(r'[\s]@-@', '-', content_buff_temp)
+            content_buff_temp = re.sub(r'@-@[\s]', '-', content_buff_temp)
             content_buff_temp = re.sub(r'\s([\'!?\.,])', r'\1', content_buff_temp)
+            content_buff_temp = re.sub(r'\s([\/])([\s])', r'\1', content_buff_temp)
+            content_buff_temp = re.sub(r'([\(|{|\[])([\s])([a-zA-Z])', r'\1\3', content_buff_temp)
+            content_buff_temp = re.sub(r'([a-zA-Z])([\s])([\)|}|\]])', r'\1\3', content_buff_temp)
             # content_buff_temp = re.sub(r'\s([\"])', r'\1', content_buff_temp)
 
             # print(content_buff_temp)
@@ -58,8 +63,8 @@ for input_file in list_file:
                 content_buff=""
                 # print(line_count)
 
-    # Write last chunk.
-    file = codecs.open(output_file, "a", "utf-8")
-    file.write(content_buff)
-    file.close()
-    content_buff=""
+        # Write last chunk.
+        file = codecs.open(output_file, "a", "utf-8")
+        file.write(content_buff)
+        file.close()
+        content_buff=""

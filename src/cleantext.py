@@ -67,6 +67,30 @@ def remove_edge(text, start, end):
             # print('     :' + text + ':')
     return text
 
+def normalize_text(content):
+    # A lot more TODO here.
+    content = content.replace('', "'")
+    content = content.replace('', '"')
+    content = content.replace('', '"')
+    content = content.replace('', "'")
+
+    content = content.replace('โ','"')
+    content = content.replace('โ', '"')
+    content = content.replace('โ', "'")
+    content = content.replace('เน','e')
+    content = content.replace('โช', '')
+    content = content.replace('âª','#')
+    return content
+
+def remove_bad_char(content):
+    # A lot more TODO here.
+    content = content.replace('♪', '')
+    content = content.replace('♥', '')
+    content = content.replace('­', '')
+    content = content.replace('♫', '')
+    content = content.replace('～', '')
+    return content
+
 def remove_between(text, start, end):
     text = text.strip()
     out_text=''
@@ -103,20 +127,20 @@ def clean_content(text, lang):
     content = content.replace('\\N', '_SIG_NEWLINE_')
     content = content.replace('//N', '_SIG_NEWLINE_')
     content = content.replace('/N', '_SIG_NEWLINE_')
-    content = content.replace('...', '_SIG_JOINLINE_')
+    # content = content.replace('...', '_SIG_JOINLINE_')
     # content = content.replace('..', '_SIG_JOINLINE_')
 
     # Clean tag.
-    print(content)
+    # print(content)
     repeat=0
     while ((content.find('{') != -1) or (content.find('<') != -1)) and (repeat<15):
         repeat = repeat + 1
         content = re.sub(r'<.*?>', '', content)
         content = re.sub(r'{.*?}', '', content)
         content = re.sub(r'{[\\][a-zA-Z]{1}[0-9]{0,2}|[>][\/][\/][<]', '', content)
-    print("====>",content)
+    # print("====>",content)
 
-    # Trim.
+    # Trim edge.
     content_s = remove_edge(content, '}', '{')
     if (content_s != ''):
         content = content_s
@@ -138,34 +162,19 @@ def clean_content(text, lang):
         content = content_s
 
     # Normoalize / Repalce bad char/string.
-    # alot more bad char TODO here.
-    content = content.replace('', "'")
-    content = content.replace('', '"')
-    content = content.replace('', '"')
-    content = content.replace('', "'")
+    content = normalize_text(content)
+    # Clean bad characters.
+    content = remove_bad_char(content)
 
-    content = content.replace('โ','"')
-    content = content.replace('โ', '"')
-    content = content.replace('โ', "'")
-    content = content.replace('เน','e')
-    content = content.replace('โช', '')
-    content = content.replace('âª','#')
-
-    # Clean.
-    content = content.replace('♪', '')
-    content = content.replace('♥', '')
-    content = content.replace('­', '')
-    content = content.replace('♫', '')
-    content = content.replace('～', '')
-
-    # Strp head / tail.
+    # Strp head/tail.
     content = content.lstrip('-')
     content = content.lstrip('"')
     content = content.replace('\\', '')
     content = content.strip()
+    # Retain sigle space.
     content = ' '.join(content.split())
 
-    # check language
+    # Codepage.
     if ((lang=='en') and (language_not_en(content)) ):
         return ''
     elif ((lang=='th') and (language_not_th_en(content)) ):

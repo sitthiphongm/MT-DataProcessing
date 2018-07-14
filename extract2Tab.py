@@ -15,7 +15,7 @@ encode_type_en="UTF-8"
 encode_type_th="TIS-620"
 
 data_path = os.path.dirname(os.path.realpath(__file__))
-data_path = data_path + '/data/srt/*.en'
+data_path = data_path + '/data/*.en'
 en_files = glob.glob(data_path)
 
 # Process tabpair.

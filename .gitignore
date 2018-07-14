@@ -55,3 +55,7 @@ fabric.properties
 # data file
 data/*
 dict/*
+
+# etc
+*.bak
+*.txt
