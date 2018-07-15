@@ -33,6 +33,16 @@ def language_mixed_en(text):
         return True
     else:
         return False
+def language_no_th_char(text):
+    if (re.search(r'[ก-ฮ]', text)):
+        return False
+    else:
+        return True
+def language_contain_en(text):
+    if re.match("[a-zA-Z]+", text):
+        return False
+    else:
+        return True
 def language_mixed_th(text):
     if u'\u0E01' <= text <= u'\u0E5B':
         return True

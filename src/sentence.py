@@ -1,6 +1,8 @@
 import re
 from nltk.tokenize import sent_tokenize as split_sentence_en
-
+import time
+from datetime import datetime
+from src.globalSetting import *
 
 def split_sentence_th(text):
     # print("-------", text)
@@ -185,5 +187,249 @@ def aplign_pair(en_ss, th_ss, max_error, forward):
             print(targetSentence)
             print(targetLen)
 
+def joint_sentence(sourceBuffer, sourceBufferTime):
+    # FMT = '%H:%M:%S'
+    # FMT = '%H:%M:%S.%f';
+    # Joint Sentence
+    t1 = '0:00:00.00';
+    t2 = '0:00:00.00';
+    prev_t1 = '0:00:00.00';
+    prev_t2 = '0:00:00.00'
+    prev_conversion = ''
+    for key, time in sourceBufferTime.items():
+        if sourceBuffer[key] != '':
+            offset = 0
+            numjoint = sourceBuffer[key + offset].find('_SIG_JOINLINE_')
+            if (numjoint != -1):
 
-# def combine_sentence(text):
+                # current time.
+                print("==>")
+                print(numjoint)
+
+                print('org text  : ', sourceBuffer[key + offset])
+                try:
+                    print('merge to  : ', sourceBuffer[key + offset + 1])
+                except:
+                    pass
+
+                curr_text = sourceBuffer[key + offset].replace('_SIG_JOINLINE_', '')
+                next_text_idx=key+offset+1
+                if next_text_idx >= len(sourceBuffer):
+                    continue
+
+                next_text = sourceBuffer[key + offset + 1]
+                time_tkns = time.split(',')
+                t0 = time_tkns[0]
+                t1 = time_tkns[1]
+                t2 = time_tkns[2]
+
+                # next time.
+                time_next = sourceBufferTime[key + offset + 1]
+                time_next_tkns = time_next.split(',')
+                t1_next = time_next_tkns[1]
+                t2_next = time_next_tkns[2]
+
+                if t2=='Default':
+                    t2=t1
+                if t2_next=='Default':
+                    t2_next=t1_next
+
+                # diff time.
+
+                try:
+                    tdelta = datetime.strptime(t1_next, FMT) - datetime.strptime(t2, FMT)
+                except:
+                    print(time, t1_next, t2)
+                    print(time_next)
+                    exit(0)
+
+                seconddiff = str(tdelta).split(':')
+                seconddiff = seconddiff[-1]
+                timediff = float(seconddiff)
+                print("diff time : ", timediff)
+
+                if next_text=='':
+                    pass
+                # elif (re.search(r'[A-Z]', next_text[0])):
+                #    sourceBuffer[key + offset] = ''
+                elif (timediff < JOIN_MSEC_DIFF):
+                    # print('source :', sourceBuffer[key+next])
+                    # print('joint  :', sourceBuffer[key+next+1])
+                    # print('time diff  :', timediff)
+                    # print('\n')
+                    # jointable.
+                    sourceBuffer[key + offset] = ''
+                    sourceBuffer[key + offset + 1] = curr_text + sourceBuffer[key + offset + 1]
+                    print('text merge : ', sourceBuffer[key + offset + 1])
+                    print(sourceBufferTime[key + offset])
+                    sourceBufferTime[key + offset + 1] = str(t0) + ',' + str(t1) + ',' + str(t2_next)
+                    print('time merge : ', sourceBufferTime[key + offset + 1])
+
+                else:
+                    # through away.
+                    sourceBuffer[key + offset] = ''
+                    sourceBuffer[key + offset + 1] = ''
+
+    # return (sourceBuffer, sourceBufferTime)
+
+def joinable(sourceBuffer, sourceBufferTime, index):
+    # current time.
+    if index >= len(sourceBuffer):
+        return False
+    next_text_idx = index + 1
+    if next_text_idx >= len(sourceBuffer):
+        curr_text = sourceBuffer[index].replace('_SIG_JOINLINE_', '')
+        return False
+
+    curr_text = sourceBuffer[index].replace('_SIG_JOINLINE_', '')
+
+
+    print("==>", index)
+    print('org text  : ', sourceBuffer[index])
+    try:
+        print('merge to  : ', sourceBuffer[index + 1])
+    except:
+        pass
+
+    time = sourceBufferTime[index]
+    next_text = sourceBuffer[index + 1]
+    time_tkns = time.split(',')
+    t0 = time_tkns[0]
+    t1 = time_tkns[1]
+    t2 = time_tkns[2]
+
+    # next time.
+    time_next = sourceBufferTime[index + 1]
+    time_next_tkns = time_next.split(',')
+    t1_next = time_next_tkns[1]
+    t2_next = time_next_tkns[2]
+
+    if t2 == 'Default':
+        t2 = t1
+    if t2_next == 'Default':
+        t2_next = t1_next
+
+    # diff time.
+    try:
+        tdelta = datetime.strptime(t1_next, FMT) - datetime.strptime(t2, FMT)
+    except:
+        print(time, t1_next, t2)
+        print(time_next)
+        exit(0)
+
+    seconddiff = str(tdelta).split(':')
+    seconddiff = seconddiff[-1]
+    timediff = float(seconddiff)
+    print("diff time : ", timediff)
+
+    if next_text == '':
+        pass
+    elif (re.search(r'[A-Z]', next_text[0])):
+        sourceBuffer[index] = ''
+    elif (timediff < JOIN_MSEC_DIFF):
+        # print('source :', sourceBuffer[key+next])
+        # print('joint  :', sourceBuffer[key+next+1])
+        # print('time diff  :', timediff)
+        # print('\n')
+        # jointable.
+        sourceBuffer[index] = ''
+        sourceBuffer[index + 1] = curr_text + sourceBuffer[index + 1] + '__JOINT__'
+        print('text merge : ', sourceBuffer[index + 1])
+        print(sourceBufferTime[index])
+        sourceBufferTime[index + 1] = str(t0) + ',' + str(t1) + ',' + str(t2_next)
+        print('time merge : ', sourceBufferTime[index + 1])
+
+    else:
+        # through away.
+        sourceBuffer[index] = ''
+        sourceBuffer[index + 1] = ''
+
+def align_sentence(sourceBuffer, sourceBufferTime, targetBuffer, targetBufferTime):
+    out_text_buff = ''
+    ROUNDING_TRESHOLD = 25
+    out_text_buff = ''
+
+    # joint_sentence(sourceBuffer, sourceBufferTime)
+    # joint_sentence(targetBuffer, targetBufferTime)
+
+    diff_threshold = datetime.strptime(DIFF_START_TRESHOLD, FMT) - datetime.strptime('00:00:00.0', FMT)
+    for index, time in sourceBufferTime.items():
+        rounding = 0
+        if sourceBuffer[index] != '':
+            while rounding <= ROUNDING_TRESHOLD:
+                source_time_tkns = time.split(',')
+                t1_source = source_time_tkns[1]
+
+                # forward.
+                index_rounding = index + rounding
+                if ((index_rounding < len(targetBufferTime)) and index_rounding >= 0):
+                    target_time_tkns = targetBufferTime[index_rounding].split(',')
+                    t1_target = target_time_tkns[1]
+                    # print(t1_source, t1_target)
+                    if t1_source >= t1_target:
+                        try:
+                            tdelta = datetime.strptime(t1_source, FMT) - datetime.strptime(t1_target, FMT)
+                        except:
+                            print('time format error', time, targetBufferTime[index_rounding])
+                            pass
+                    elif t1_source < t1_target:
+                        try:
+                            tdelta = datetime.strptime(t1_target, FMT) - datetime.strptime(t1_source, FMT)
+                        except:
+                            print('time format error', time, targetBufferTime[index_rounding])
+                            pass
+                    else:
+                        print('error')
+
+                    if (tdelta < diff_threshold):
+                        # print('=>', tdelta, DIFF_START_TRESHOLD)
+                        if targetBuffer[index_rounding] != '':
+                            active_index=index
+                            join=False
+                            while (sourceBuffer[active_index].find('_SIG_JOINLINE_') != -1):
+                                joinable(sourceBuffer, sourceBufferTime, active_index)
+                                joinable(targetBuffer, targetBufferTime, active_index+rounding)
+                                active_index=active_index+1
+                                join=True
+                            if join==False:
+                                out_text_buff = out_text_buff + sourceBuffer[active_index] + '\t' + targetBuffer[active_index+rounding] + '\n'
+                            break
+
+                # backward.
+                index_rounding = index - rounding
+                if ((index_rounding < len(targetBufferTime)) and index_rounding >= 0):
+                    target_time_tkns = targetBufferTime[index_rounding].split(',')
+                    t1_target = target_time_tkns[1]
+                    # print(t1_source, t1_target)
+                    if t1_source >= t1_target:
+                        try:
+                            tdelta = datetime.strptime(t1_source, FMT) - datetime.strptime(t1_target, FMT)
+                        except:
+                            print('time format error', time, targetBufferTime[index_rounding])
+                            pass
+                    elif t1_source < t1_target:
+                        try:
+                            tdelta = datetime.strptime(t1_target, FMT) - datetime.strptime(t1_source, FMT)
+                        except:
+                            print('time format error', time, targetBufferTime[index_rounding])
+                            pass
+                    else:
+                        print('error')
+
+                    if (tdelta < diff_threshold):
+                        # print('=>', tdelta, DIFF_START_TRESHOLD)
+                        if targetBuffer[index_rounding] != '':
+                            active_index=index
+                            join=False
+                            while (sourceBuffer[active_index].find('_SIG_JOINLINE_') != -1):
+                                joinable(sourceBuffer, sourceBufferTime, active_index)
+                                joinable(targetBuffer, targetBufferTime, active_index-rounding)
+                                active_index=active_index+1
+                                join = True
+                            if join==False:
+                                out_text_buff = out_text_buff + sourceBuffer[active_index] + '\t' + targetBuffer[active_index-rounding] + '\n'
+                            break
+
+                rounding = rounding + 1
+
+    return(out_text_buff)

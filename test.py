@@ -117,3 +117,22 @@ file.write(content_buff)
 file.close()
 '''
 
+'''  
+if key not in pair_buffer.keys():
+    break                                           
+content_s = str(pair_buffer[key])
+content = clean_content(line, 'th')
+if ((content_s != '') and (content != '')):
+    source_english = re.search('[a-zA-Z]', content_s)
+    target_english = re.search('[a-zA-Z]', content)
+    source_thai = re.search('[ก-ฮ]', content_s)
+    target_thai = re.search('[ก-ฮ]', content)
+    out_text = ''
+    if (source_english and target_thai):
+        out_text = content_s + '\t' + content
+    elif (source_thai and target_english):
+        out_text = content + '\t' + content_s + ''
+    # Wrong pair.
+    if (out_text != ''):
+        out_text_buff += out_text + '\n'
+'''

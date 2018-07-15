@@ -1,7 +1,6 @@
 import re
 import codecs
-from src.language import language_not_en
-from src.language import language_not_th_en
+from src.language import *
 
 def describe(self, text):
     self.description = text
@@ -122,13 +121,20 @@ def clean_content(text, lang):
         space = ''
 
     # TODO. We should not just remove \n. Need to do sentence segment.
+    newline_replancement = '_SIG_NEWLINE_'
+    newline_replancement = ' '
     content = find_between_r(text, ',,', '\n')
-    content = content.replace('\\n', '_SIG_NEWLINE_')
-    content = content.replace('\\N', '_SIG_NEWLINE_')
-    content = content.replace('//N', '_SIG_NEWLINE_')
-    content = content.replace('/N', '_SIG_NEWLINE_')
-    # content = content.replace('...', '_SIG_JOINLINE_')
-    # content = content.replace('..', '_SIG_JOINLINE_')
+    content = content.replace('\\n', newline_replancement)
+    content = content.replace('\\N', newline_replancement)
+    content = content.replace('//N', newline_replancement)
+    content = content.replace('/N', newline_replancement)
+
+    content=content.strip()
+    clen=len(content)
+    if (content[clen-3:clen]== '...'):
+        content = content[:clen-3] + ' ' + '_SIG_JOINLINE_'
+    if (content[clen-2:clen]== '..'):
+        content = content[:clen-2] + ' ' + '_SIG_JOINLINE_'
 
     # Clean tag.
     # print(content)
@@ -175,9 +181,11 @@ def clean_content(text, lang):
     content = ' '.join(content.split())
 
     # Codepage.
-    if ((lang=='en') and (language_not_en(content)) ):
+    if ((lang == 'en') and (language_not_en(content)) ):
         return ''
-    elif ((lang=='th') and (language_not_th_en(content)) ):
+    elif ((lang == 'th') and (language_no_th_char(content)) ):
+        return ''
+    elif ((lang == 'th') and (language_not_th_en(content)) ):
         return ''
     else:
         return content

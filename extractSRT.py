@@ -6,20 +6,26 @@ import re
 import os
 import glob
 import sys
+import time
+from datetime import datetime
 from langdetect import detect
-from src.cleantext import clean_content
-from src.cleantext import find_between_r
+from src.cleantext import *
+from src.sentence import *
 
 encode_type="UTF-8"
 encode_type_en="UTF-8"
 encode_type_th="TIS-620"
 
 data_path = os.path.dirname(os.path.realpath(__file__))
-data_path = data_path + '/data/tab/*.en'
+data_path = data_path + '/data/srt/*.en'
 en_files = glob.glob(data_path)
 
 # Process tabpair.
-pair_buffer={}
+pairBuffer={}
+sourceBuffer={}
+targetBuffer={}
+sourceBufferTime={}
+targetBufferTime={}
 
 progress=0
 totol_files = len(en_files)
@@ -33,15 +39,29 @@ for source_file in en_files:
     out_text_buff=''
 
     try:
+
+        print(source_file)
+        # Do not process completed files.
+        # file_name = source_file.strip('.en')
+        # filename_tab = file_name + '.tab'
+        # if os.path.exists(filename_tab):
+        #   continue
+
         with codecs.open(source_file, "r", encoding=encode_type) as sourceFile:
+            prev_content = ''
+            count=0
             for line in sourceFile.readlines():
                 time_frame = find_between_r(line, 'Marked=', 'Default')
                 time_frame = ((time_frame.lstrip(',')).strip(',')).strip()
+                content = clean_content(line, 'en')
                 if (time_frame != ''):
-                    key = re.sub('[^A-Za-z0-9]+', '', time_frame)
-                    content = clean_content(line, 'en')
+                    # key = re.sub('[^A-Za-z0-9]+', '', time_frame)
+                    # key = time_frame
                     if(content != ''):
-                        pair_buffer[key] = content
+                        sourceBuffer[count] = content
+                        sourceBufferTime[count] = time_frame
+                        count=count+1
+                prev_content = content
 
         # find target file name
         file_name = source_file.strip('.en')
@@ -51,34 +71,27 @@ for source_file in en_files:
             if (temp_file_ext == -1):
                 break
             current_file_ext = temp_file_ext
-
         file_name = source_file[0:current_file_ext]
         target_file = file_name + '.th'
-
         # print(target_file)
+
         with codecs.open(target_file, "r", encoding=encode_type) as targetFile:
+            prev_content=''
+            count = 0
             for line in targetFile.readlines():
                 time_frame = find_between_r(line, 'Marked=', 'Default')
                 time_frame = ((time_frame.lstrip(',')).strip(',')).strip()
                 if (time_frame != ''):
-                    key = re.sub('[^A-Za-z0-9]+', '', time_frame)
-                    if key not in pair_buffer.keys():
-                        break
-                    content_s = str(pair_buffer[key])
+                    # key = re.sub('[^A-Za-z0-9]+', '', time_frame)
+                    # key = time_frame
                     content = clean_content(line, 'th')
-                    if ((content_s != '') and (content != '')):
-                        source_english = re.search('[a-zA-Z]', content_s)
-                        target_english = re.search('[a-zA-Z]', content)
-                        source_thai = re.search('[ก-ฮ]', content_s)
-                        target_thai = re.search('[ก-ฮ]', content)
-                        out_text = ''
-                        if (source_english and target_thai):
-                            out_text = content_s + '\t' + content
-                        elif (source_thai and target_english):
-                            out_text = content + '\t' + content_s + ''
-                        # Wrong pair.
-                        if (out_text != ''):
-                            out_text_buff += out_text + '\n'
+                    if (content != ''):
+                        targetBuffer[count] = content
+                        targetBufferTime[count] = time_frame
+                        count = count + 1
+                prev_content = content
+
+        out_text_buff=align_sentence(sourceBuffer, sourceBufferTime, targetBuffer, targetBufferTime)
         filename_tab = file_name + '.tab'
         file = codecs.open(filename_tab, "w", "utf-8")
         file.write(out_text_buff)
