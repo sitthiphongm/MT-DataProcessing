@@ -10,14 +10,14 @@ import nltk
 from langdetect import detect
 from src.cleantext import clean_content
 from src.language import language_not_en
-from src.language import language_not_th_en
+from src.language import language_not_enth
 from nltk.tokenize import regexp_tokenize
 from nltk.tokenize import sent_tokenize
 from src.sentence import split_sentence_th
 from src.sentence import detok_thai
 from nltk.tokenize import word_tokenize
 from nltk.tokenize import TweetTokenizer
-from src.tokenize import tokenize_thai
+# from src.tokenize import tokenize_thai
 
 encode_type="UTF-8"
 encoding_t="ISO-8859-1"
@@ -51,10 +51,11 @@ if (re.search(r'ธปท.', target_s)):
 
 print(source_s,target_s)
 
+text='For other frequencies , scaling by the ratio of the frequencies ( for example , 1.5 Ghz = 1.65 Ghz / 1.5 Ghz × cycles per operation ) is sufficiently accurate to produce a reasonable sizing'
+# text='list of governors of the BOT'
+print(language_not_en(text))
 
-'''
-GENERAL	Num	^[ ]{0,3}[0-9]{1,3}[\.|\)][ ]		GENERAL13
-GENERAL	Num	(?<=^|[ \"\'\t\(\-\+\,\≥\≤\/\[\:\\][ ]{0,5})(?<num>([\-|\+]?[0-9]{1,3})([,][0-9]{3}){0,})([\.][0-9]+)[a-z]\b		GENERAL14
-GENERAL	Num	(?<=^|[ \"\'\t\(\-\+\,\≥\≤\/\[\:\\][ ]{0,5})(?<num>([\-|\+]?[0-9]{1,3})([,][0-9]{3}){0,})([\.][0-9]+)([\.][0-9]+)(?!\.)\b		GENERAL15
-GENERAL	Num	(?<=^|[ \"\'\t\(\-\+\,\≥\≤\/\[\:\\][ ]{0,5})(?<num>([\-|\+]?[0-9]{1,3})([,]?[0-9]{3}){0,})([\.][0-9]+)?\b		GENERAL16
-'''
+text= 'รายชื่อผู้ว่าการของ ธปท. ธปท'
+print(language_not_enth(text))
+
+

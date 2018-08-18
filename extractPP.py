@@ -24,6 +24,7 @@ encode_type="UTF-8"
 
 DEFAULT_PERCENT_ERROR=5
 DEFAULT_MAX_REPEAT=10
+DEFAULT_HUN_TRESHOLD=0.70
 
 dirname = sys.argv[-1]
 dirname = dirname.strip()
@@ -66,7 +67,7 @@ for input_file in list_file:
     hist=[]
 
     with codecs.open(input_file, "r", encoding=encode_type) as sourceFile:
-
+        thresh=DEFAULT_HUN_TRESHOLD
         for line in sourceFile.readlines():
             # line_count = line_count + 1
             tokens=line.strip().split('\t')

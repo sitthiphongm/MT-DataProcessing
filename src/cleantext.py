@@ -263,13 +263,10 @@ def clean_text(text, lang):
 
     # Codepage.
     if ((lang == 'en') and (language_not_en(content))):
-        # print('1')
+        return ''
+    elif ((lang == 'th') and (language_not_enth(content))):
         return ''
     elif ((lang == 'th') and (language_no_th_char(content))):
-        # print(content, '2')
-        return ''
-    elif ((lang == 'th') and (language_not_th_en(content))):
-        # print('3')
         return ''
     else:
         return content
