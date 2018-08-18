@@ -15,7 +15,7 @@ dirname = dirname.strip()
 if dirname[-1] != "/":
     dirname+="/"
 
-to_data_path = dirname + '*.txt'
+to_data_path = dirname + '*EN.txt'
 list_file=glob.glob(to_data_path)
 
 for input_file in list_file:
@@ -23,7 +23,7 @@ for input_file in list_file:
     output_dir=os.path.dirname(input_file)+"/"
     base_name=str(basename(input_file)).split(".")
     base_name=base_name[0]
-    output_file= output_dir + base_name + ".detok.EN.txt"
+    output_file= output_dir + base_name + ".detok.txt"
     content_buff=''
 
     # Empty file.
@@ -53,7 +53,9 @@ for input_file in list_file:
             # content_buff_temp = re.sub(r'\s([\"])', r'\1', content_buff_temp)
 
             # print(content_buff_temp)
+
             content_buff=content_buff + content_buff_temp + "\n"
+
 
             line_count += 1
             if (line_count%10000 == 0):

@@ -189,3 +189,87 @@ def clean_content(text, lang):
         return ''
     else:
         return content
+
+def clean_text(text, lang):
+    # space = ''
+    if lang == 'en':
+        space = ' '
+    elif lang == 'th':
+        space = ''
+
+    # TODO. We should not just remove \n. Need to do sentence segment.
+    newline_replancement = '_SIG_NEWLINE_'
+    newline_replancement = ' '
+    # content = find_between_r(text, ',,', '\n')
+    content=text
+    content = content.replace('\\n', newline_replancement)
+    content = content.replace('\\N', newline_replancement)
+    content = content.replace('//N', newline_replancement)
+    content = content.replace('/N', newline_replancement)
+
+    content = content.strip()
+
+    '''
+    clen = len(content)
+    if (content[clen - 3:clen] == '...'):
+        content = content[:clen - 3] + ' ' + '_SIG_JOINLINE_'
+    if (content[clen - 2:clen] == '..'):
+        content = content[:clen - 2] + ' ' + '_SIG_JOINLINE_'
+    '''
+
+    # Clean tag.
+    # print(content)
+    repeat = 0
+    while ((content.find('{') != -1) or (content.find('<') != -1)) and (repeat < 15):
+        repeat = repeat + 1
+        content = re.sub(r'<.*?>', '', content)
+        content = re.sub(r'{.*?}', '', content)
+        content = re.sub(r'{[\\][a-zA-Z]{1}[0-9]{0,2}|[>][\/][\/][<]', '', content)
+    # print("====>",content)
+
+    # Trim edge.
+    content_s = remove_edge(content, '}', '{')
+    if (content_s != ''):
+        content = content_s
+    content_s = remove_edge(content, '[', ']')
+    if (content_s != ''):
+        content = content_s
+    content_s = remove_edge(content, '>', '<')
+    if (content_s != ''):
+        content = content_s
+    content_s = remove_edge(content, '(', ')')
+    if (content_s != ''):
+        content = content_s
+
+    content_s = remove_edge(content, '\\i0', '\\i1')
+    if (content_s != ''):
+        content = content_s
+    content_s = extract_between(content, '\\j0', '\\j1')
+    if (content_s != ''):
+        content = content_s
+
+    # Normoalize / Repalce bad char/string.
+    content = normalize_text(content)
+    # Clean bad characters.
+    content = remove_bad_char(content)
+
+    # Strp head/tail.
+    content = content.lstrip('-')
+    content = content.lstrip('"')
+    content = content.replace('\\', '')
+    content = content.strip()
+    # Retain sigle space.
+    content = ' '.join(content.split())
+
+    # Codepage.
+    if ((lang == 'en') and (language_not_en(content))):
+        # print('1')
+        return ''
+    elif ((lang == 'th') and (language_no_th_char(content))):
+        # print(content, '2')
+        return ''
+    elif ((lang == 'th') and (language_not_th_en(content))):
+        # print('3')
+        return ''
+    else:
+        return content

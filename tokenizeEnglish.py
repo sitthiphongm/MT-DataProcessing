@@ -16,8 +16,9 @@ dirname = dirname.strip()
 if dirname[-1] != "/":
     dirname+="/"
 
-to_data_path = dirname + '*detok.EN.txt'
+to_data_path = dirname + '*.detok.txt'
 list_file=glob.glob(to_data_path)
+
 
 # Tokenize.
 word_tokenize = TweetTokenizer()
@@ -28,6 +29,7 @@ def tokenize_eng(text):
     for word in tokens:
         content_buff = content_buff + " " + word
     content_buff = ' '.join(content_buff.split())
+    content_buff = re.sub(r"([a-zA-Z0-9])(\')([a-zA-Z0-9])", r'\1 \2\3', content_buff)
     return( content_buff.strip() )
 
 for input_file in list_file:
@@ -46,6 +48,7 @@ for input_file in list_file:
 
     with codecs.open(input_file, "r", encoding=encode_type) as sourceFile:
         line_count=0
+        prev_st=''
         for line in sourceFile.readlines():
             # content = clean_content(line, ' ')
             line=line.strip()
@@ -55,8 +58,18 @@ for input_file in list_file:
                 content_buff += "\n"
                 continue
 
-            content_buff = content_buff + tokenize_eng(line) + "\n"
+            if (line==prev_st):
+                content_tmp=prev_tok
+            else:
+                content_tmp = tokenize_eng(line)
+                # content_tmp = re.sub(r"([a-zA-Z0-9])(\')([a-zA-Z0-9])", r'\1 \2\3', content_tmp)
+
+            # print(content_tmp)
+            content_buff = content_buff + content_tmp + "\n"
+            prev_st = line
+            prev_tok = content_tmp
             line_count += 1
+
             # Flush data.
             if (line_count%10000 == 0):
                 file = codecs.open(output_file, "a", encode_type)

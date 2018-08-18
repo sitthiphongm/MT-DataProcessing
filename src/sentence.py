@@ -101,10 +101,10 @@ def aplign_pair(en_ss, th_ss, max_error, forward):
     targetSentence = split_sentence_th(th_ss)
 
     if (len(sourceSentence) == 1 or len(targetSentence) == 1):
-        # TODO
+        # nothing to do
         pass
     elif (len(sourceSentence) == len(targetSentence)):
-        # TODO
+        # nothing to do
         pass
     else:
         # Character ratio
@@ -175,6 +175,7 @@ def aplign_pair(en_ss, th_ss, max_error, forward):
             if is_end(active_idx, sourceLen, targetLen):
                 break
 
+        '''
         if len(sourceLen) == len(targetLen):
             print(sourceSentence)
             print(sourceLen)
@@ -186,6 +187,10 @@ def aplign_pair(en_ss, th_ss, max_error, forward):
             print(sourceLen)
             print(targetSentence)
             print(targetLen)
+        '''
+
+    en_ss=' '.join([str(x) for x in sourceSentence])
+    th_ss = ' '.join([str(x) for x in targetSentence])
 
 def joint_sentence(sourceBuffer, sourceBufferTime):
     # FMT = '%H:%M:%S'
@@ -241,7 +246,7 @@ def joint_sentence(sourceBuffer, sourceBufferTime):
                 except:
                     print(time, t1_next, t2)
                     print(time_next)
-                    exit(0)
+                    continue
 
                 seconddiff = str(tdelta).split(':')
                 seconddiff = seconddiff[-1]
@@ -282,14 +287,12 @@ def joinable(sourceBuffer, sourceBufferTime, index):
         return False
 
     curr_text = sourceBuffer[index].replace('_SIG_JOINLINE_', '')
-
-
-    print("==>", index)
-    print('org text  : ', sourceBuffer[index])
-    try:
-        print('merge to  : ', sourceBuffer[index + 1])
-    except:
-        pass
+    # print("==>", index)
+    # print('org text  : ', sourceBuffer[index])
+    # try:
+        # print('merge to  : ', sourceBuffer[index + 1])
+    # except:
+    #     pass
 
     time = sourceBufferTime[index]
     next_text = sourceBuffer[index + 1]
@@ -315,12 +318,12 @@ def joinable(sourceBuffer, sourceBufferTime, index):
     except:
         print(time, t1_next, t2)
         print(time_next)
-        exit(0)
+        return False
 
     seconddiff = str(tdelta).split(':')
     seconddiff = seconddiff[-1]
     timediff = float(seconddiff)
-    print("diff time : ", timediff)
+    # print("diff time : ", timediff)
 
     if next_text == '':
         pass
@@ -334,10 +337,10 @@ def joinable(sourceBuffer, sourceBufferTime, index):
         # jointable.
         sourceBuffer[index] = ''
         sourceBuffer[index + 1] = curr_text + sourceBuffer[index + 1] + '__JOINT__'
-        print('text merge : ', sourceBuffer[index + 1])
-        print(sourceBufferTime[index])
+        # print('text merge : ', sourceBuffer[index + 1])
+        # print(sourceBufferTime[index])
         sourceBufferTime[index + 1] = str(t0) + ',' + str(t1) + ',' + str(t2_next)
-        print('time merge : ', sourceBufferTime[index + 1])
+        # print('time merge : ', sourceBufferTime[index + 1])
 
     else:
         # through away.
@@ -353,6 +356,8 @@ def align_sentence(sourceBuffer, sourceBufferTime, targetBuffer, targetBufferTim
     # joint_sentence(targetBuffer, targetBufferTime)
 
     diff_threshold = datetime.strptime(DIFF_START_TRESHOLD, FMT) - datetime.strptime('00:00:00.0', FMT)
+    diff_dummy = datetime.strptime(DIFF_START_DUMMAY, FMT) - datetime.strptime('00:00:00.0', FMT)
+
     for index, time in sourceBufferTime.items():
         rounding = 0
         if sourceBuffer[index] != '':
@@ -371,15 +376,19 @@ def align_sentence(sourceBuffer, sourceBufferTime, targetBuffer, targetBufferTim
                             tdelta = datetime.strptime(t1_source, FMT) - datetime.strptime(t1_target, FMT)
                         except:
                             print('time format error', time, targetBufferTime[index_rounding])
+                            tdelta = diff_dummy
                             pass
                     elif t1_source < t1_target:
                         try:
                             tdelta = datetime.strptime(t1_target, FMT) - datetime.strptime(t1_source, FMT)
                         except:
                             print('time format error', time, targetBufferTime[index_rounding])
+                            tdelta = diff_dummy
                             pass
                     else:
                         print('error')
+
+                    # print(t1_source, t1_target)
 
                     if (tdelta < diff_threshold):
                         # print('=>', tdelta, DIFF_START_TRESHOLD)
@@ -406,12 +415,14 @@ def align_sentence(sourceBuffer, sourceBufferTime, targetBuffer, targetBufferTim
                             tdelta = datetime.strptime(t1_source, FMT) - datetime.strptime(t1_target, FMT)
                         except:
                             print('time format error', time, targetBufferTime[index_rounding])
+                            tdelta = diff_dummy
                             pass
                     elif t1_source < t1_target:
                         try:
                             tdelta = datetime.strptime(t1_target, FMT) - datetime.strptime(t1_source, FMT)
                         except:
                             print('time format error', time, targetBufferTime[index_rounding])
+                            tdelta = diff_dummy
                             pass
                     else:
                         print('error')

@@ -16,12 +16,12 @@ dirname = dirname.strip()
 if dirname[-1] != "/":
     dirname+="/"
 # print(dirname)
-to_data_path = dirname + '*.txt'
+to_data_path = dirname + '*TH.txt'
 list_file=glob.glob(to_data_path)
 
 # load dictionary
 dictionaryThai={}
-dictionaryThai=loadThaiDictionay()
+dictionaryThai=loadThaiDictionary()
 # sys.exit(0)
 
 for input_file in list_file:
@@ -29,7 +29,7 @@ for input_file in list_file:
     output_dir=os.path.dirname(input_file)+"/"
     base_name=str(basename(input_file)).split(".")
     base_name=base_name[0]
-    output_file= output_dir + base_name + ".detok.TH.txt"
+    output_file= output_dir + base_name + ".detok.txt"
     content_buff=''
 
     # Empty file.
