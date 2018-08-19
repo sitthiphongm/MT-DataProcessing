@@ -114,17 +114,18 @@ for input_file in list_file:
 
                 target_s = re.sub(r"([a-zA-Z0-9])(\')([a-zA-Z0-9])", r'\1 \2\3', target_s)
 
+                if (re.search(r'ธปท', target_s)):
+                    source_s = re.sub(r'bot|BOT|Bot', 'Bank of Thailand', source_s)
+                    target_s = re.sub(r'ธปท.|ธปท', 'ธนาคาร แห่ง ประเทศไทย', target_s)
+
                 if (source_s=='' or target_s==''):
                     hun_score = 0
                 elif (re.search(r' no no ', source_s)):
                     hun_score = 0
                 elif (re.search(r' no , no ', source_s)):
                     hun_score = 0
-                if (re.search(r' oh , oh ', source_s)):
+                elif (re.search(r' oh , oh ', source_s)):
                     hun_score = 0
-                elif (re.search(r'ธปท', target_s)):
-                    source_s = re.sub(r'bot|BOT|Bot', 'Bank of Thailand', source_s)
-                    target_s = re.sub(r'ธปท.|ธปท', 'ธนาคาร แห่ง ประเทศไทย', target_s)
                 else:
                     hun_score= float(tokens[2])
                     while (re.search(r'([0-9]+)[ ]?([,|.|:|-|/])[ ]([0-9]+)', source_s)):
@@ -153,8 +154,8 @@ for input_file in list_file:
                     # st = st + ' ==> ' + target_s
 
                     content_buff = content_buff + escape(st) + '\n'
-
                     line_count += 1
+
                 if st==prev_st:
                     repeat=repeat+1
                 else:
