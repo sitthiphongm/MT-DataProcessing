@@ -48,13 +48,13 @@ for filename,multiply in filelist.items():
             text=line.strip()
             for i in range(int(multiply)):
                 # lower case for the last one.
-                if i==(multiply-1):
+                if ((i==(multiply-1)) and (multiply > 2)):
                     text = text.lower()
                 content_buff = content_buff + text + "\n"
                 line_count += 1
 
             # Flush data.
-            if (line_count>10000):
+            if (line_count>50000):
                 file = codecs.open(output_file, "a", encode_type)
                 file.write(content_buff)
                 file.close()

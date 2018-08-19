@@ -59,6 +59,14 @@ for input_file in list_file:
     content_buff=''
 
     # Empty file.
+    if (os.path.isfile(output_file)):
+        print('File Exist : ' + output_file)
+        # continue
+    else:
+        print('Process Output File : ' + output_file)
+        # open(output_file, 'w').close()
+
+    # sys.exit(0)
     open(output_file, 'w').close()
 
     content_buff=""
@@ -84,7 +92,7 @@ for input_file in list_file:
 
         mean=np.mean(hist)
         sd=np.std(hist)
-        thresh=1.6-mean
+        thresh=1.5-mean
         print('==>',mean, sd, thresh)
 
     with codecs.open(input_file, "r", encoding=encode_type) as sourceFile:
@@ -114,16 +122,18 @@ for input_file in list_file:
                     hun_score = 0
                 if (re.search(r' oh , oh ', source_s)):
                     hun_score = 0
-                    target_s = 'รายชื่อผู้ว่าการของ ธปท.'
                 elif (re.search(r'ธปท', target_s)):
                     source_s = re.sub(r'bot|BOT|Bot', 'Bank of Thailand', source_s)
-                    target_s = re.sub(r'ธปท.|ธปท', 'ธนาคารแห่งประเทศไทย', target_s)
+                    target_s = re.sub(r'ธปท.|ธปท', 'ธนาคาร แห่ง ประเทศไทย', target_s)
                 else:
                     hun_score= float(tokens[2])
                     while (re.search(r'([0-9]+)[ ]?([,|.|:|-|/])[ ]([0-9]+)', source_s)):
                         source_s = re.sub(r'([0-9]+)[ ]?([,|.|:|-|/])[ ]([0-9]+)', r'\1\2\3', source_s)
                     while (re.search(r'([0-9]+)[ ]?([,|.|:|-|/])[ ]([0-9]+)', target_s)):
                         target_s = re.sub(r'([0-9]+)[ ]?([,|.|:|-|/])[ ]([0-9]+)', r'\1\2\3', target_s)
+
+                    if (re.search(r'([a-zA-Z]{2,})[-]([a-zA-Z]{2,})', source_s)):
+                        target_s=re.sub(r'([ก-๛a-zA-Z]{2,})[ ]?([-])[ ]?([ก-๛a-zA-Z]{2,})', r'\1\2\3', target_s)
 
             else:
                 # print(line_count, line.strip())

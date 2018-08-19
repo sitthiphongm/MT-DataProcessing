@@ -58,4 +58,19 @@ print(language_not_en(text))
 text= 'รายชื่อผู้ว่าการของ ธปท. ธปท'
 print(language_not_enth(text))
 
+t1='aaa-bbb nnn - hhh'
+t2='กก- bb '
+t3='กก -bb'
+t4='กก - bb'
+
+while (re.search(r'([a-zA-Z]{2,})[-]([a-zA-Z]{2,})', t1)):
+    print('YES')
+    print(re.sub(r'([ก-๛a-zA-Z]{2,})[ ]?([-])[ ]?([ก-๛a-zA-Z]{2,})', r'\1\2\3', t1))
+    print(re.sub(r'([ก-๛a-zA-Z]{2,})[ ]?([-])[ ]?([ก-๛a-zA-Z]{2,})', r'\1\2\3', t2))
+    print(re.sub(r'([ก-๛a-zA-Z]{2,})[ ]?([-])[ ]?([ก-๛a-zA-Z]{2,})', r'\1\2\3', t3))
+    print(re.sub(r'([ก-๛a-zA-Z]{2,})[ ]?([-])[ ]?([ก-๛a-zA-Z]{2,})', r'\1\2\3', t4))
+
+
+print(source_s)
+
 
