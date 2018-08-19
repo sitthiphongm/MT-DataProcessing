@@ -108,6 +108,7 @@ for input_file in list_file:
             if len(tokens)==3:
                 source_s = tokens[0].lstrip('-').lstrip('#').strip()
                 target_s = tokens[1].rstrip('.').lstrip('-').lstrip('#').strip()
+
                 # need to be the same with english.
                 source_s = clean_text(source_s, 'en')
                 target_s = clean_text(target_s, 'th')
@@ -144,15 +145,12 @@ for input_file in list_file:
             if hun_score > thresh:
                 st=(source_s + '\t' + target_s)
                 if repeat <= DEFAULT_MAX_REPEAT:
-
-                    # class
+                    # format number to help word embedding&stat.
                     st = re.sub(r'([0-9]{4})([-\/\.])(1[012]|0?[1-9])([-\/\.])([12][0-9]|3[01]|0?[1-9])\b', '@date@', st)
                     st = re.sub(r'([0-9]{4})([-\/\.])([12][0-9]|3[01]|0?[1-9])([-\/\.])(1[012]|0?[1-9])\b', '@date@', st)
                     st = re.sub(r'([12][0-9]|3[01]|0?[1-9])([-\/\.])(1[012]|0?[1-9])([-\/\.])([0-9]{4})\b', '@date@', st)
                     st = re.sub(r'(([0-9]{1,3})([,]?[0-9]{3}){0,})([\.][0-9]+)?\b', '@num@', st)
-
                     # st = st + ' ==> ' + target_s
-
                     content_buff = content_buff + escape(st) + '\n'
                     line_count += 1
 
