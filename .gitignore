@@ -53,9 +53,21 @@ fabric.properties
 .idea/httpRequests
 
 # data file
-data/*
-dict/*
+data/rawdata/*
+# dict/*
 
 # etc
 *.bak
 *.txt
+*.tab
+*.tok
+*.dic
+*.detok
+*.raw
+*.en
+*.th
+*.hun
+*.org
+*.truecase
+*.out
+*.mul

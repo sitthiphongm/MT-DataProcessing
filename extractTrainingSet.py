@@ -23,7 +23,7 @@ from src.sentence import split_sentence_th
 encode_type="UTF-8"
 
 DEFAULT_PERCENT_ERROR=5
-DEFAULT_MAX_REPEAT=10
+DEFAULT_MAX_REPEAT=1
 DEFAULT_HUN_TRESHOLD=0.70
 
 dirname = sys.argv[-1]
@@ -61,7 +61,7 @@ for input_file in list_file:
     # Empty file.
     if (os.path.isfile(output_file)):
         print('File Exist : ' + output_file)
-        # continue
+        continue
     else:
         print('Process Output File : ' + output_file)
         # open(output_file, 'w').close()
@@ -119,6 +119,7 @@ for input_file in list_file:
                     source_s = re.sub(r'bot|BOT|Bot', 'Bank of Thailand', source_s)
                     target_s = re.sub(r'ธปท.|ธปท', 'ธนาคาร แห่ง ประเทศไทย', target_s)
 
+                hun_score = 0
                 if (source_s=='' or target_s==''):
                     hun_score = 0
                 elif (re.search(r' no no ', source_s)):
@@ -128,36 +129,39 @@ for input_file in list_file:
                 elif (re.search(r' oh , oh ', source_s)):
                     hun_score = 0
                 else:
-                    hun_score= float(tokens[2])
-                    while (re.search(r'([0-9]+)[ ]?([,|.|:|-|/])[ ]([0-9]+)', source_s)):
-                        source_s = re.sub(r'([0-9]+)[ ]?([,|.|:|-|/])[ ]([0-9]+)', r'\1\2\3', source_s)
-                    while (re.search(r'([0-9]+)[ ]?([,|.|:|-|/])[ ]([0-9]+)', target_s)):
-                        target_s = re.sub(r'([0-9]+)[ ]?([,|.|:|-|/])[ ]([0-9]+)', r'\1\2\3', target_s)
+                    len_source = len(source_s.split(' '))
+                    len_target = len(target_s.split(' '))
+                    norm = (len_source + len_target) / 2
+                    diff_count = int((100 * abs(len_source - len_target)) / max(len_source, len_target))
+                    per = diff_count
+                    if (norm <= 6):
+                        per = diff_count * norm * 0.1
+                    if per < 50:
+                        hun_score= float(tokens[2])
+                        while (re.search(r'([0-9]+)[ ]?([,|.|:|-|/])[ ]([0-9]+)', source_s)):
+                            source_s = re.sub(r'([0-9]+)[ ]?([,|.|:|-|/])[ ]([0-9]+)', r'\1\2\3', source_s)
+                        while (re.search(r'([0-9]+)[ ]?([,|.|:|-|/])[ ]([0-9]+)', target_s)):
+                            target_s = re.sub(r'([0-9]+)[ ]?([,|.|:|-|/])[ ]([0-9]+)', r'\1\2\3', target_s)
 
-                    if (re.search(r'([a-zA-Z]{2,})[-]([a-zA-Z]{2,})', source_s)):
-                        target_s=re.sub(r'([ก-๛a-zA-Z]{2,})[ ]?([-])[ ]?([ก-๛a-zA-Z]{2,})', r'\1\2\3', target_s)
+                        if (re.search(r'([a-zA-Z]{2,})[-]([a-zA-Z]{2,})', source_s)):
+                            target_s=re.sub(r'([ก-๛a-zA-Z]{2,})[ ]?([-])[ ]?([ก-๛a-zA-Z]{2,})', r'\1\2\3', target_s)
 
             else:
                 # print(line_count, line.strip())
-                line_count += 1
+                # line_count += 1
                 continue
 
             if hun_score > thresh:
                 st=(source_s + '\t' + target_s)
-                if repeat <= DEFAULT_MAX_REPEAT:
-                    # format number to help word embedding&stat.
-                    st = re.sub(r'([0-9]{4})([-\/\.])(1[012]|0?[1-9])([-\/\.])([12][0-9]|3[01]|0?[1-9])\b', '@date@', st)
-                    st = re.sub(r'([0-9]{4})([-\/\.])([12][0-9]|3[01]|0?[1-9])([-\/\.])(1[012]|0?[1-9])\b', '@date@', st)
-                    st = re.sub(r'([12][0-9]|3[01]|0?[1-9])([-\/\.])(1[012]|0?[1-9])([-\/\.])([0-9]{4})\b', '@date@', st)
-                    st = re.sub(r'(([0-9]{1,3})([,]?[0-9]{3}){0,})([\.][0-9]+)?\b', '@num@', st)
-                    # st = st + ' ==> ' + target_s
+                # format number to help word embedding&stat.
+                st = re.sub(r'([0-9]{4})([-\/\.])(1[012]|0?[1-9])([-\/\.])([12][0-9]|3[01]|0?[1-9])\b', '@date@', st)
+                st = re.sub(r'([0-9]{4})([-\/\.])([12][0-9]|3[01]|0?[1-9])([-\/\.])(1[012]|0?[1-9])\b', '@date@', st)
+                st = re.sub(r'([12][0-9]|3[01]|0?[1-9])([-\/\.])(1[012]|0?[1-9])([-\/\.])([0-9]{4})\b', '@date@', st)
+                st = re.sub(r'(([0-9]{1,3})([,]?[0-9]{3}){0,})([\.][0-9]+)?\b', '@num@', st)
+                # st = st + ' ==> ' + target_s
+                if (st != prev_st):
                     content_buff = content_buff + escape(st) + '\n'
                     line_count += 1
-
-                if st==prev_st:
-                    repeat=repeat+1
-                else:
-                    repeat=0
                 prev_st=st
 
             # Flush buffer.

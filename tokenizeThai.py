@@ -21,7 +21,7 @@ dirname = dirname.strip()
 if dirname[-1] != "/":
     dirname+="/"
 
-to_data_path = dirname + '*.detok.txt'
+to_data_path = dirname + '*.txt'
 list_file=glob.glob(to_data_path)
 
 for input_file in list_file:

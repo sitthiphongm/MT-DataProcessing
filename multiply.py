@@ -45,11 +45,36 @@ for filename,multiply in filelist.items():
         line_count=0
         content_buff=''
         for line in ppfile:
-            text=line.strip()
+            tokens=line.split('\t')
+
+            source=tokens[0].strip(',').strip()
+            target=tokens[1].strip(',').strip()
+
+            '''
+            len_source = len(source.split(' '))
+            len_target = len(target.split(' '))
+
+            norm=(len_source+len_target)/2
+
+            diff_count=int((100*abs(len_source-len_target))/max(len_source,len_target))
+
+            per=diff_count
+            if (norm<=6):
+                per=diff_count*norm*0.1
+
+            if per>50:
+                print(source, target, len_source, len_target, str(diff_count)+'%', per)
+                continue
+            '''
+
+            text = source + '\t' + target
+
             for i in range(int(multiply)):
                 # lower case for the last one.
                 if ((i==(multiply-1)) and (multiply > 2)):
                     text = text.lower()
+
+
                 content_buff = content_buff + text + "\n"
                 line_count += 1
 

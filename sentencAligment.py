@@ -23,7 +23,7 @@ dirname = dirname.strip()
 if dirname[-1] != "/":
     dirname+="/"
 
-to_data_path = dirname + 'ibm.en/*.tok'
+to_data_path = dirname + 'it/en/*.tok'
 list_file=glob.glob(to_data_path)
 
 # create if not exist.
@@ -67,7 +67,7 @@ for input_file in list_file:
         content_buff=""
         file_count=file_count+1
 
-    input_file=input_file.replace('ibm.en', 'ibm.th')
+    input_file=input_file.replace('it/en', 'it/th')
     print(input_file)
 
     with codecs.open(input_file, "r", encoding=encode_type) as sourceFile:
