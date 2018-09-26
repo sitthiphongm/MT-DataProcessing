@@ -23,11 +23,12 @@ dirname = dirname.strip()
 if dirname[-1] != "/":
     dirname+="/"
 
-to_data_path = dirname + 'it/en/*.tok'
+to_data_path = dirname + 'tokenize/en/*.tok'
 list_file=glob.glob(to_data_path)
 
-# create if not exist.
-# createHunDictionary()
+# create hunalign dictionay if not exist.
+createHunDictionary()
+
 # split file.
 # os.system('hunalign/hunalign -text -utf dict/th-en.hun.dic hunalign/example/Titles.EN hunalign/example/Titles.TH > hunalign/example/Titles.HUN.txt')
 
@@ -67,7 +68,7 @@ for input_file in list_file:
         content_buff=""
         file_count=file_count+1
 
-    input_file=input_file.replace('it/en', 'it/th')
+    input_file=input_file.replace('tokenize/en', 'tokenize/th')
     print(input_file)
 
     with codecs.open(input_file, "r", encoding=encode_type) as sourceFile:
@@ -103,7 +104,7 @@ for input_file in list_file:
         target_file=temp_file.replace('/source/', '/target/')
         output_file=temp_file.replace('/source/', '/output/')
         # print(source_file, target_file, output_file)
-        command_line='hunalign/hunalign -text -utf dict/th-en.hun.dic' + ' ' + source_file + ' ' + target_file + ' > ' + output_file
+        command_line='hunalign/hunalign -text -utf dict/' + dictionary_hun + ' ' + source_file + ' ' + target_file + ' > ' + output_file
         print(command_line)
         os.system(command_line)
 

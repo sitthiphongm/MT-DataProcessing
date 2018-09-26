@@ -92,8 +92,11 @@ for input_file in list_file:
 
         mean=np.mean(hist)
         sd=np.std(hist)
-        thresh=1.5-mean
-        print('==>',mean, sd, thresh)
+        if mean<1:
+            thresh=0.9
+        else:
+            thresh=0.7
+        print('==> ',' mean='+mean, ' sd='+sd, ' treshold='+thresh)
 
     with codecs.open(input_file, "r", encoding=encode_type) as sourceFile:
         line_count = 0
